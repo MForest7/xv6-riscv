@@ -335,6 +335,8 @@ typedef uint64 *pagetable_t; // 512 PTEs
 #define PGSIZE 4096 // bytes per page
 #define PGSHIFT 12  // bits of offset within a page
 
+#define DMESG_P 1 // pages for dmesg buffer
+
 #define PTDEPTH 3 // count of page table levels
 #define PTSIZE 512 // count of entries at page table level
 

@@ -681,3 +681,13 @@ procdump(void)
     printf("\n");
   }
 }
+
+uint64
+uptime() {
+  uint64 xticks;
+
+  acquire(&tickslock);
+  xticks = ticks;
+  release(&tickslock);
+  return xticks;
+}

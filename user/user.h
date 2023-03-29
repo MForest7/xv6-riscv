@@ -29,6 +29,8 @@ int holdlk(int);
 int dellk(int);
 void vmprint(void);
 void pgaccess(void);
+void dmesg(void);
+void prmsg(const char*, int);
 
 // ulib.c
 int stat(const char*, struct stat*);

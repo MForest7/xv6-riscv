@@ -29,7 +29,8 @@ OBJS = \
   $K/kernelvec.o \
   $K/plic.o \
   $K/virtio_disk.o \
-  $K/sleeplockpool.o
+  $K/sleeplockpool.o \
+  $K/dmesg.o
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-
 # perhaps in /opt/riscv/bin
@@ -135,7 +136,8 @@ UPROGS=\
 	$U/_grind\
 	$U/_wc\
 	$U/_zombie\
-	$U/_testvm
+	$U/_testvm \
+	$U/_testdmesg
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

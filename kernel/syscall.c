@@ -108,6 +108,8 @@ extern uint64 sys_holdlk(void);
 extern uint64 sys_dellk(void);
 extern uint64 sys_vmprint(void);
 extern uint64 sys_pgaccess(void);
+extern uint64 sys_dmesg(void);
+extern uint64 sys_prmsg(void);
 
 
 // An array mapping syscall numbers from syscall.h
@@ -140,7 +142,9 @@ static uint64 (*syscalls[])(void) = {
 [SYS_holdlk]  sys_holdlk,
 [SYS_dellk]   sys_dellk,
 [SYS_vmprint] sys_vmprint,
-[SYS_pgaccess] sys_pgaccess
+[SYS_pgaccess] sys_pgaccess,
+[SYS_dmesg]   sys_dmesg,
+[SYS_prmsg]   sys_prmsg
 
 };
 

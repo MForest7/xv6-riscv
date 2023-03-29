@@ -21,9 +21,11 @@
 #define SYS_mkdir  20
 #define SYS_close  21
 #define SYS_initlk 22
-#define SYS_acqlk 23
-#define SYS_rellk 24
+#define SYS_acqlk  23
+#define SYS_rellk  24
 #define SYS_holdlk 25
-#define SYS_dellk 26
+#define SYS_dellk  26
 #define SYS_vmprint 27
 #define SYS_pgaccess 28
+#define SYS_dmesg  29
+#define SYS_prmsg  30

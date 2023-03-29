@@ -43,3 +43,5 @@ entry("holdlk");
 entry("dellk");
 entry("vmprint");
 entry("pgaccess");
+entry("dmesg");
+entry("prmsg");

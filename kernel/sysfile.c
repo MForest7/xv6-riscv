@@ -176,6 +176,24 @@ sys_pgaccess(void) {
   return 0;
 }
 
+uint64
+sys_dmesg(void) {
+  dmesg();
+  return 0;
+}
+
+uint64
+sys_prmsg(void) {
+  uint64 ptr;
+  int len;
+
+  argaddr(0, &ptr);
+  argint(1, &len);
+
+  pr_msg(ptr, len);
+  return 0;
+}
+
 // Create the path new as a link to the same inode as old.
 uint64
 sys_link(void)
