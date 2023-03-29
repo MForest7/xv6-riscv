@@ -102,6 +102,97 @@ walk(pagetable_t pagetable, uint64 va, int alloc)
   return &pagetable[PX(0, va)];
 }
 
+void 
+print_walk(pagetable_t pagetable, int depth) {
+  for (int entry = 0; entry < PTSIZE; entry++) {
+    pte_t pte = pagetable[entry];
+    if(pte & PTE_V) {
+      uint64 pa = PTE2PA(pte);
+
+      for (int i = 0; i < depth; i++)
+        printf(" ..");
+      printf("%d: pte %p pa %p ", entry, pte, pa);
+
+      if (pte & PTE_R) printf("R");
+      if (pte & PTE_W) printf("W");
+      if (pte & PTE_X) printf("X");
+      if (pte & PTE_U) printf("U");
+      if (pte & PTE_A) printf("A");
+      printf("\n");
+
+      if (depth < PTDEPTH)
+        print_walk((pagetable_t)pa, depth + 1);
+    }
+  }
+}
+
+int
+pt_accessed(pagetable_t pagetable, int depth) {
+  for (int entry = 0; entry < PTSIZE; entry++) {
+    pte_t pte = pagetable[entry];
+    if(pte & PTE_V) {
+      pagetable_t pa = (pagetable_t)PTE2PA(pte);
+
+      if (depth < PTDEPTH && pt_accessed(pa, depth + 1))
+        return 1;
+      else if (depth == PTDEPTH && pte & PTE_A)
+        return 1;
+    }
+  }
+  return 0;
+}
+
+void
+print_accessed(pagetable_t pagetable, int depth) {
+  for (int entry = 0; entry < PTSIZE; entry++) {
+    pte_t* pte = &pagetable[entry];
+    if(*pte & PTE_V) {
+      uint64 pa = PTE2PA(*pte);
+
+      if (depth < PTDEPTH) {
+        if (!pt_accessed((pagetable_t)pa, depth + 1))
+          continue;
+        
+        for (int i = 0; i < depth; i++)
+          printf(" ..");
+        printf("%d: pte %p pa %p\n", entry, *pte, pa);
+
+        print_accessed((pagetable_t)pa, depth + 1);
+      } else {
+        if (!(*pte & PTE_A))
+          continue;
+        
+        for (int i = 0; i < depth; i++)
+          printf(" ..");
+        printf("%d: pte %p pa %p ", entry, *pte, pa);
+
+        if (*pte & PTE_R) printf("R");
+        if (*pte & PTE_W) printf("W");
+        if (*pte & PTE_X) printf("X");
+        if (*pte & PTE_U) printf("U");
+        if (*pte & PTE_A) printf("A");
+        printf("\n");
+
+        *pte &= ~PTE_A;
+      }
+    }
+  }
+}
+
+void
+vmprint(pagetable_t pagetable)
+{
+  printf("page table %p\n", pagetable);
+  print_walk(pagetable, 1);
+}
+
+void
+pgaccess(pagetable_t pagetable)
+{
+  printf("page table %p\n", pagetable);
+  print_accessed(pagetable, 1);
+}
+
 // Look up a virtual address, return the physical address,
 // or 0 if not mapped.
 // Can only be used to look up user pages.

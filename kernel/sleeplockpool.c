@@ -9,8 +9,10 @@
 
 #define SLEEPLOCK_POOL_SIZE 512
 
+enum lock_state { FREE, USING, PROCESSING };
+
 struct sleeplock pool[SLEEPLOCK_POOL_SIZE];
-int is_free[SLEEPLOCK_POOL_SIZE];
+enum lock_state state[SLEEPLOCK_POOL_SIZE];
 int free_locks[SLEEPLOCK_POOL_SIZE];
 int head;
 struct spinlock pool_lock;
@@ -21,10 +23,9 @@ void initsleeplockpool() {
     initlock(&pool_lock, "sleeplock pool lock");
 
     for (int i = 0; i < SLEEPLOCK_POOL_SIZE; i++) {
-        pool[i].lk = pool_lock;
-        pool[i].pid = 0;
+        initsleeplock(&pool[i], "pool");
         free_locks[i] = i;
-        is_free[i] = 1;
+        state[i] = FREE;
     }
 }
 
@@ -34,63 +35,87 @@ int initpoollock(int* ld) {
         return -2; // no locks available
 
     *ld = free_locks[head++];
-    is_free[*ld] = 0;
+    state[*ld] = USING;
     release(&pool_lock);
     return 0;
 }
 
 static int check_ld_is_valid(int ld) {
-    acquire(&pool_lock);
     if (ld < 0 || SLEEPLOCK_POOL_SIZE <= ld) {
-        release(&pool_lock);
         return -1; // index is out of bounds
     }
-    if (is_free[ld]) {
-        release(&pool_lock);
+    if (state[ld] == FREE) {
         return -3; // uninitialized lock
     }
-    release(&pool_lock);
     return 0;
 }
 
+static int get_lock_ownership(int ld) {
+    while (1) {
+        acquire(&pool_lock);
+
+        int error = check_ld_is_valid(ld); 
+        if (error) {
+            release(&pool_lock);
+            return error;
+        }
+
+        if (state[ld] != PROCESSING) {
+            state[ld] = PROCESSING;
+            release(&pool_lock);
+            return 0;
+        }
+        release(&pool_lock);
+    }
+}
+
+static void end_lock_ownership(int ld, enum lock_state new_state) {
+    acquire(&pool_lock);
+    state[ld] = new_state;
+    release(&pool_lock);
+}
+
 int acquirepoollock(int ld) {
-    int error = check_ld_is_valid(ld); 
-    if (error)
+    int error;
+    if ((error = get_lock_ownership(ld)) != 0)
         return error;
     
     acquiresleep(&pool[ld]);
+
+    end_lock_ownership(ld, USING);
     return 0;
 }
 
 int releasepoollock(int ld) {
-    int error = check_ld_is_valid(ld); 
-    if (error)
+    int error;
+    if ((error = get_lock_ownership(ld)) != 0)
         return error;
     
     releasesleep(&pool[ld]);
+
+    end_lock_ownership(ld, USING);
     return 0;
 }
 
 int holdingpoollock(int ld) {
-    int error = check_ld_is_valid(ld); 
-    if (error)
+    int error;
+    if ((error = get_lock_ownership(ld)) != 0)
         return error;
     
-    return holdingsleep(&pool[ld]);
+    int res = holdingsleep(&pool[ld]);
+
+    end_lock_ownership(ld, USING);
+    return res;
 }
 
 int deletepoollock(int ld) {
-    int error = check_ld_is_valid(ld); 
-    if (error)
+    int error;
+    if ((error = get_lock_ownership(ld)) != 0)
         return error;
-    
-    releasesleep(&pool[ld]);
 
-    acquire(&pool_lock);
-    is_free[ld] = 1;
     head--;
     free_locks[head] = ld;
-    release(&pool_lock);
 
+    end_lock_ownership(ld, FREE);
     return 0;
 }

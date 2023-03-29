@@ -41,3 +41,5 @@ entry("acqlk");
 entry("rellk");
 entry("holdlk");
 entry("dellk");
+entry("vmprint");
+entry("pgaccess");

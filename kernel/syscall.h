@@ -25,3 +25,5 @@
 #define SYS_rellk 24
 #define SYS_holdlk 25
 #define SYS_dellk 26
+#define SYS_vmprint 27
+#define SYS_pgaccess 28

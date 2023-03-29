@@ -27,6 +27,8 @@ int acqlk(int);
 int rellk(int);
 int holdlk(int);
 int dellk(int);
+void vmprint(void);
+void pgaccess(void);
 
 // ulib.c
 int stat(const char*, struct stat*);
