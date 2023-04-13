@@ -29,7 +29,7 @@ int holdlk(int);
 int dellk(int);
 void vmprint(void);
 void pgaccess(void);
-void dmesg(void);
+void dmesg(char*, int);
 void prmsg(const char*, int);
 
 // ulib.c

@@ -39,7 +39,8 @@ main(int argc, char *argv[])
             int len = receive(0, buf, BUF_SIZE);
             prmsg(buf, len);
         } else if (cmd == 'p') {
-            dmesg();
+            dmesg(buf, BUF_SIZE);
+            printf("%s", buf);
         } else if (cmd == 'q') {
             exit(0);
         } else if (cmd != ' ' && cmd != '\n') {

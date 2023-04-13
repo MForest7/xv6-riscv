@@ -144,8 +144,10 @@ char*           strncpy(char*, const char*, int);
 
 // dmesg.c
 void            init_dmesg(void);
-void            pr_msg(uint64, int);
+void            pr_msg(const char*, ...);
+void            pr_user_msg(uint64, int);
 void            dmesg(void);
+void            user_dmesg(uint64, int);
 
 // syscall.c
 void            argint(int, int*);

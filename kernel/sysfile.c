@@ -178,7 +178,13 @@ sys_pgaccess(void) {
 
 uint64
 sys_dmesg(void) {
-  dmesg();
+  uint64 ptr;
+  int len;
+
+  argaddr(0, &ptr);
+  argint(1, &len);
+
+  user_dmesg(ptr, len);
   return 0;
 }
 
@@ -190,7 +196,7 @@ sys_prmsg(void) {
   argaddr(0, &ptr);
   argint(1, &len);
 
-  pr_msg(ptr, len);
+  pr_user_msg(ptr, len);
   return 0;
 }
 

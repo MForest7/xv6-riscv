@@ -137,7 +137,8 @@ UPROGS=\
 	$U/_wc\
 	$U/_zombie\
 	$U/_testvm \
-	$U/_testdmesg
+	$U/_testdmesg \
+	$U/_dmesg
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
