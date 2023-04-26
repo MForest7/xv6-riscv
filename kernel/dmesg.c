@@ -62,20 +62,15 @@ pr_msg(const char* fmt, ...) {
   }
   va_end(ap);
 
-  if (buf_commit(&dmesg_instance.msg_buf) == 0) {
-    release(&dmesg_instance.lk);
-    return -1;
-  }
-
-  uint64 final_msg_len = 5 + strlen(ticks_str) + strlen(dmesg_instance.msg_buf.buf);
-  if (buf_free_space(&dmesg_instance.buf) < final_msg_len) {
+  uint64 final_msg_len = 4 + strlen(ticks_str) + strlen(dmesg_instance.msg_buf.buf);
+  if (dmesg_instance.buf.capacity - 1 < final_msg_len) {
     release(&dmesg_instance.lk);
     return -1;
   }
 
   if (
-    buf_appendf(&dmesg_instance.buf, 1, "[%s] %s\n", ticks_str, dmesg_instance.msg_buf.buf) == 0
-    && buf_commit(&dmesg_instance.buf) == 0) 
+    buf_appendf(&dmesg_instance.buf, 1, "[%s] %s", ticks_str, dmesg_instance.msg_buf.buf) == 0
+    || buf_commit(&dmesg_instance.buf) == 0) 
   {
     buf_rollback(&dmesg_instance.buf);
   }
@@ -104,12 +99,16 @@ int
 user_dmesg(uint64 uptr, int len) {
   acquire(&dmesg_instance.lk);
   int i = 0;
-  for (int it = dmesg_instance.buf.begin; i < len - 1 && it < dmesg_instance.buf.end; i++, it = (it + 1) % dmesg_instance.buf.capacity) {
-    if (copyout(myproc()->pagetable, uptr + i, dmesg_instance.buf.buf + it, 1) == -1)
+  for (int it = dmesg_instance.buf.begin; i < len - 1 && it != dmesg_instance.buf.end; i++, it = (it + 1) % dmesg_instance.buf.capacity) {
+    if (copyout(myproc()->pagetable, uptr + i, dmesg_instance.buf.buf + it, 1) == -1) {
+      release(&dmesg_instance.lk);
       return -1;
+    }
   }
-  if (copyout(myproc()->pagetable, uptr + i, "\0", 1) == -1)
+  if (copyout(myproc()->pagetable, uptr + i, "\0", 1) == -1) {
+    release(&dmesg_instance.lk);
     return -1;
+  }
   release(&dmesg_instance.lk);
   return 0;
 }

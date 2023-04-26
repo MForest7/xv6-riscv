@@ -24,19 +24,26 @@ buf_clear(struct strbuf* buf) {
     buf->begin = 0;
     buf->end = 0;
     buf->savepoint = 0;
+
+    for (uint64 i = 0; i < buf->capacity; i++)
+      buf->buf[i] = 0;
 }
 
 static uint64
 buf_popstr(struct strbuf* buf) {
+    if (buf->begin == buf->savepoint)
+      return 0;
+    
     uint64 freed = 0;
-    while (buf->buf[buf->begin]) {
+    while (buf->buf[buf->begin] != '\n') {
         if (buf->begin == buf->savepoint)
             return freed;
-        uint64 next = buf->begin = (buf->begin + 1) % buf->capacity;
+        uint64 next = (buf->begin + 1) % buf->capacity;
         buf->begin = next;
         freed++;
     }
-    return freed;
+    buf->begin = (buf->begin + 1) % buf->capacity;
+    return freed + 1;
 }
 
 static int 
@@ -45,13 +52,15 @@ putchar(struct strbuf* buf, char c, int forced) {
     if (next == buf->begin) {
         if (forced) {
             buf_popstr(buf);
-            if (next == buf->begin)
+            if (next == buf->begin) {
                 return 0;
+            }
         } else {
             return 0;
         }
     }
-    buf->buf[buf->end++] = c;
+    buf->buf[buf->end] = c;
+    buf->end = next;
     return 1;
 }
 
@@ -65,7 +74,7 @@ buf_free_space(struct strbuf* buf) {
 
 int
 buf_commit(struct strbuf* buf) {
-    int success = putchar(buf, 0, 1);
+    int success = putchar(buf, '\n', 1);
     buf->savepoint = buf->end;
     return success;
 }

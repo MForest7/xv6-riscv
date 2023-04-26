@@ -198,6 +198,23 @@ sys_prmsg(void) {
   return pr_user_msg(ptr, len);
 }
 
+uint64
+sys_setlogging(void) {
+  int event_type;
+  int ticks;
+
+  argint(0, &event_type);
+  argint(1, &ticks);
+
+  if (event_type == 1)
+    set_interrupts_logging(ticks);
+  if (event_type == 2)
+    set_switches_logging(ticks);
+  if (event_type == 3)
+    set_syscalls_logging(ticks);
+  return 0;
+}
+
 // Create the path new as a link to the same inode as old.
 uint64
 sys_link(void)

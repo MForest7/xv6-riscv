@@ -160,6 +160,15 @@ int             pr_user_msg(uint64, int);
 void            dmesg(void);
 int             user_dmesg(uint64, int);
 
+// eventlog.c
+void            init_log_controller(void);
+void            set_interrupts_logging(int);
+void            set_switches_logging(int);
+void            set_syscalls_logging(int);
+int             interrupts_logged();
+int             switches_logged();
+int             syscalls_logged();
+
 // syscall.c
 void            argint(int, int*);
 int             argstr(int, char*, int);

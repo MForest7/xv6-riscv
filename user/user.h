@@ -31,6 +31,7 @@ void vmprint(void);
 void pgaccess(void);
 int dmesg(char*, int);
 int prmsg(const char*, int);
+void setlogging(int, int);
 
 // ulib.c
 int stat(const char*, struct stat*);

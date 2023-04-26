@@ -2,7 +2,9 @@
 #include "kernel/stat.h"
 #include "user/user.h"
 
-#define BUF_SIZE 512
+#define BUF_SIZE 8192
+
+char buf[BUF_SIZE];
 
 int receive(int id, char* buf, int max_len) {
     char c;
@@ -24,8 +26,6 @@ int receive(int id, char* buf, int max_len) {
 int
 main(int argc, char *argv[])
 {
-    char buf[BUF_SIZE];
-
     while (1) {
         char cmd = 0;
         if (read(0, &cmd, 1) <= 0) {

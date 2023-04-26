@@ -110,41 +110,43 @@ extern uint64 sys_vmprint(void);
 extern uint64 sys_pgaccess(void);
 extern uint64 sys_dmesg(void);
 extern uint64 sys_prmsg(void);
+extern uint64 sys_setlogging(void);
 
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
 static uint64 (*syscalls[])(void) = {
-[SYS_fork]    sys_fork,
-[SYS_exit]    sys_exit,
-[SYS_wait]    sys_wait,
-[SYS_pipe]    sys_pipe,
-[SYS_read]    sys_read,
-[SYS_kill]    sys_kill,
-[SYS_exec]    sys_exec,
-[SYS_fstat]   sys_fstat,
-[SYS_chdir]   sys_chdir,
-[SYS_dup]     sys_dup,
-[SYS_getpid]  sys_getpid,
-[SYS_sbrk]    sys_sbrk,
-[SYS_sleep]   sys_sleep,
-[SYS_uptime]  sys_uptime,
-[SYS_open]    sys_open,
-[SYS_write]   sys_write,
-[SYS_mknod]   sys_mknod,
-[SYS_unlink]  sys_unlink,
-[SYS_link]    sys_link,
-[SYS_mkdir]   sys_mkdir,
-[SYS_close]   sys_close,
-[SYS_initlk]  sys_initlk,
-[SYS_acqlk]   sys_acqlk,
-[SYS_rellk]   sys_rellk,
-[SYS_holdlk]  sys_holdlk,
-[SYS_dellk]   sys_dellk,
-[SYS_vmprint] sys_vmprint,
-[SYS_pgaccess] sys_pgaccess,
-[SYS_dmesg]   sys_dmesg,
-[SYS_prmsg]   sys_prmsg
+[SYS_fork]        sys_fork,
+[SYS_exit]        sys_exit,
+[SYS_wait]        sys_wait,
+[SYS_pipe]        sys_pipe,
+[SYS_read]        sys_read,
+[SYS_kill]        sys_kill,
+[SYS_exec]        sys_exec,
+[SYS_fstat]       sys_fstat,
+[SYS_chdir]       sys_chdir,
+[SYS_dup]         sys_dup,
+[SYS_getpid]      sys_getpid,
+[SYS_sbrk]        sys_sbrk,
+[SYS_sleep]       sys_sleep,
+[SYS_uptime]      sys_uptime,
+[SYS_open]        sys_open,
+[SYS_write]       sys_write,
+[SYS_mknod]       sys_mknod,
+[SYS_unlink]      sys_unlink,
+[SYS_link]        sys_link,
+[SYS_mkdir]       sys_mkdir,
+[SYS_close]       sys_close,
+[SYS_initlk]      sys_initlk,
+[SYS_acqlk]       sys_acqlk,
+[SYS_rellk]       sys_rellk,
+[SYS_holdlk]      sys_holdlk,
+[SYS_dellk]       sys_dellk,
+[SYS_vmprint]     sys_vmprint,
+[SYS_pgaccess]    sys_pgaccess,
+[SYS_dmesg]       sys_dmesg,
+[SYS_prmsg]       sys_prmsg,
+[SYS_setlogging]  sys_setlogging
 
 };
 
@@ -155,6 +157,10 @@ syscall(void)
   struct proc *p = myproc();
 
   num = p->trapframe->a7;
+
+  if (syscalls_logged())
+    pr_msg("system call (id=%d)", num);
+
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     // Use num to lookup the system call function for num, call it,
     // and store its return value in p->trapframe->a0

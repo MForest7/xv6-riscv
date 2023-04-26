@@ -458,6 +458,10 @@ scheduler(void)
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
+
+        if (switches_logged())
+          pr_msg("switch to process(name=%s, pid=%d", p->name, p->pid);
+
         p->state = RUNNING;
         c->proc = p;
         swtch(&c->context, &p->context);

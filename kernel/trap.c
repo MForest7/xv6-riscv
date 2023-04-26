@@ -186,6 +186,9 @@ devintr()
     // irq indicates which device interrupted.
     int irq = plic_claim();
 
+    if (interrupts_logged())
+      pr_msg("interrupted by device(irq=%d)", irq);
+
     if(irq == UART0_IRQ){
       uartintr();
     } else if(irq == VIRTIO0_IRQ){
