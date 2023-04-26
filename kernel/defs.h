@@ -8,6 +8,7 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+struct strbuf;
 
 // bio.c
 void            binit(void);
@@ -142,12 +143,22 @@ int             strlen(const char*);
 int             strncmp(const char*, const char*, uint);
 char*           strncpy(char*, const char*, int);
 
+// strbuf.c
+void            buf_init(struct strbuf*, char*, uint64);
+void            buf_clear(struct strbuf*);
+uint64          buf_free_space(struct strbuf*);
+int             buf_commit(struct strbuf*);
+void            buf_rollback(struct strbuf*);
+int             buf_vappendf(struct strbuf*, int, const char*, void*);
+int             buf_appendf(struct strbuf*, int, const char*, ...);
+void            buf_consprint(const struct strbuf*);
+
 // dmesg.c
 void            init_dmesg(void);
-void            pr_msg(const char*, ...);
-void            pr_user_msg(uint64, int);
+int             pr_msg(const char*, ...);
+int             pr_user_msg(uint64, int);
 void            dmesg(void);
-void            user_dmesg(uint64, int);
+int             user_dmesg(uint64, int);
 
 // syscall.c
 void            argint(int, int*);

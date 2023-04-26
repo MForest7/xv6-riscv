@@ -184,8 +184,7 @@ sys_dmesg(void) {
   argaddr(0, &ptr);
   argint(1, &len);
 
-  user_dmesg(ptr, len);
-  return 0;
+  return user_dmesg(ptr, len);
 }
 
 uint64
@@ -196,8 +195,7 @@ sys_prmsg(void) {
   argaddr(0, &ptr);
   argint(1, &len);
 
-  pr_user_msg(ptr, len);
-  return 0;
+  return pr_user_msg(ptr, len);
 }
 
 // Create the path new as a link to the same inode as old.

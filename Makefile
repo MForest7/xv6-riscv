@@ -30,7 +30,9 @@ OBJS = \
   $K/plic.o \
   $K/virtio_disk.o \
   $K/sleeplockpool.o \
-  $K/dmesg.o
+  $K/strbuf.o \
+  $K/dmesg.o \
+  $K/eventlog.o
 
 # riscv64-unknown-elf- or riscv64-linux-gnu-
 # perhaps in /opt/riscv/bin

@@ -22,12 +22,14 @@ int
 main(int argc, char *argv[])
 {
     if (argc != 2) {
-        printf("must be exactly one argument: size of dynamically allocated memory");
+        printf("error: must be exactly one argument: size of dynamically allocated memory\n");
+        exit(1);
     }
 
     int buf_size = atoi(argv[1]);
     char* a = (char*)malloc(buf_size);
     if (a == 0) {
+        printf("error: bad alloc\n");
         exit(1);
     }
 
@@ -58,6 +60,12 @@ main(int argc, char *argv[])
         } else if (cmd == 'q') {
             free(a);
             exit(0);
+        } else if (cmd == 'h') {
+            printf("b <index> -- print index-th byte of array\n");
+            printf("p         -- print entries for all pages\n");
+            printf("a         -- print entries for accessed pages\n");
+            printf("h         -- show help\n");
+            printf("q         -- quit\n");
         } else if (cmd != ' ' && cmd != '\n') {
             printf("unknown command\n");
         }
