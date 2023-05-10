@@ -30,3 +30,5 @@
 #define SYS_dmesg      29
 #define SYS_prmsg      30
 #define SYS_setlogging 31
+#define SYS_symlink    32
+#define SYS_readlink   33

@@ -7,6 +7,8 @@
 
 static char digits[] = "0123456789abcdef";
 
+#define INT_MAX_LENGTH 16
+
 void 
 buf_init(struct strbuf* buf, char* mem, uint64 capacity) {
     if (capacity < 2)
@@ -94,12 +96,19 @@ printint(struct strbuf* buf, int xx, int base, int sign, int forced)
   else
     x = xx;
 
+  char int_buf[INT_MAX_LENGTH];
+  int i = 0;
+
   do {
-    if (putchar(buf, digits[x % base], forced) == 0) return 0;
+    int_buf[i++] = digits[x % base];
   } while((x /= base) != 0);
 
   if(sign) {
-    if (putchar(buf, '-', forced) == 0) return 0;
+    int_buf[i++] = '-';
+  }
+
+  while (--i >= 0) {
+    if (putchar(buf, int_buf[i], forced) == 0) return 0;
   }
 
   return 1;

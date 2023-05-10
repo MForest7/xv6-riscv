@@ -26,6 +26,7 @@ void
 ls(char *path)
 {
   char buf[512], *p;
+  char target[512];
   int fd;
   struct dirent de;
   struct stat st;
@@ -60,11 +61,19 @@ ls(char *path)
         continue;
       memmove(p, de.name, DIRSIZ);
       p[DIRSIZ] = 0;
-      if(stat(buf, &st) < 0){
+      if(stat(buf, &st, 1) < 0){
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
-      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
+      if (st.type == T_SYMLINK) {
+        if (readlink(buf, target) < 0) {
+          printf("ls: cannot read symlink target %s\n", buf);
+          continue;
+        }
+        printf("%s -> %s %d %d %d\n", fmtname(buf), target, st.type, st.ino, st.size);
+      }
+      else
+        printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, st.size);
     }
     break;
   }

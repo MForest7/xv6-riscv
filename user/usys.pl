@@ -46,3 +46,5 @@ entry("pgaccess");
 entry("dmesg");
 entry("prmsg");
 entry("setlogging");
+entry("symlink");
+entry("readlink");

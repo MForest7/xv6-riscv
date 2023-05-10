@@ -82,12 +82,12 @@ gets(char *buf, int max)
 }
 
 int
-stat(const char *n, struct stat *st)
+stat(const char *n, struct stat *st, int nofollow)
 {
   int fd;
   int r;
 
-  fd = open(n, O_RDONLY);
+  fd = open(n, O_RDONLY | (O_NOFOLLOW * nofollow));
   if(fd < 0)
     return -1;
   r = fstat(fd, st);

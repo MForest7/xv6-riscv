@@ -460,7 +460,7 @@ scheduler(void)
         // before jumping back to us.
 
         if (switches_logged())
-          pr_msg("switch to process(name=%s, pid=%d", p->name, p->pid);
+          pr_msg("switch to process(name=%s, pid=%d)", p->name, p->pid);
 
         p->state = RUNNING;
         c->proc = p;

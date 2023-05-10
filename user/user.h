@@ -32,9 +32,11 @@ void pgaccess(void);
 int dmesg(char*, int);
 int prmsg(const char*, int);
 void setlogging(int, int);
+int symlink(const char*, const char*);
+int readlink(const char*, const char*);
 
 // ulib.c
-int stat(const char*, struct stat*);
+int stat(const char*, struct stat*, int);
 char* strcpy(char*, const char*);
 void *memmove(void*, const void*, int);
 char* strchr(const char*, char c);

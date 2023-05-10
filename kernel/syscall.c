@@ -111,6 +111,8 @@ extern uint64 sys_pgaccess(void);
 extern uint64 sys_dmesg(void);
 extern uint64 sys_prmsg(void);
 extern uint64 sys_setlogging(void);
+extern uint64 sys_symlink(void);
+extern uint64 sys_readlink(void);
 
 
 // An array mapping syscall numbers from syscall.h
@@ -146,7 +148,9 @@ static uint64 (*syscalls[])(void) = {
 [SYS_pgaccess]    sys_pgaccess,
 [SYS_dmesg]       sys_dmesg,
 [SYS_prmsg]       sys_prmsg,
-[SYS_setlogging]  sys_setlogging
+[SYS_setlogging]  sys_setlogging,
+[SYS_symlink]     sys_symlink,
+[SYS_readlink]    sys_readlink
 
 };
 

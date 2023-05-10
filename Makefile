@@ -141,7 +141,9 @@ UPROGS=\
 	$U/_testvm \
 	$U/_testdmesg \
 	$U/_dmesg \
-	$U/_syslog
+	$U/_syslog \
+	$U/_symlink \
+	$U/_readlink
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
