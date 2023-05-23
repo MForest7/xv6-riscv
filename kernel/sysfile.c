@@ -474,7 +474,7 @@ uint64 sys_readlink(void) {
 uint64
 sys_open(void)
 {
-  char path[MAXPATH];
+  char path[2 * MAXPATH];
   int fd, omode;
   struct file *f;
   struct inode *ip;
@@ -498,13 +498,30 @@ sys_open(void)
     }
 
     if (ip->type == T_SYMLINK && (omode & O_NOFOLLOW) == 0) {
+      int path_len = n - 1;
       for (int depth = 0; ip->type == T_SYMLINK && depth < MAXSLDEPTH; depth++) {
-        int path_len;
+        while (path[--path_len] != '/' && path_len > 0);
+        path[path_len += (path[path_len] == '/')] = 0;
 
-        if (readi(ip, 0, (uint64) &path_len, 0, sizeof(int)) != sizeof(int)) {
+        int next_token_len = 0;
+        if (readi(ip, 0, (uint64) &next_token_len, 0, sizeof(int)) != sizeof(int)) {
           iunlockput(ip);
           end_op();
           return -1;
+        }
+
+        if (readi(ip, 0, (uint64) path + path_len, sizeof(int), next_token_len) != next_token_len) {
+          iunlockput(ip);
+          end_op();
+          return -1;
+        }
+
+        if (path[path_len] == '/') {
+          for (int i = 0; i < next_token_len; i++)
+            path[i] = path[i + path_len];
+          path[path_len = next_token_len] = 0;
+        } else {
+          path[path_len += next_token_len] = 0;
         }
 
         if (path_len >= MAXPATH) {
@@ -512,13 +529,6 @@ sys_open(void)
           end_op();
           return -1;
         }
-
-        if (readi(ip, 0, (uint64) path, sizeof(int), path_len) != path_len) {
-          iunlockput(ip);
-          end_op();
-          return -1;
-        }
-        path[path_len] = 0;
         
         iunlockput(ip);
         if((ip = namei(path)) == 0){
