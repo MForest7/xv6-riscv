@@ -143,7 +143,8 @@ UPROGS=\
 	$U/_dmesg \
 	$U/_syslog \
 	$U/_symlink \
-	$U/_readlink
+	$U/_readlink \
+	$U/_bigfile
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)
